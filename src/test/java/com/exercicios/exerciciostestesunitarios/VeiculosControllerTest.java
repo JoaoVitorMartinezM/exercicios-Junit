@@ -1,5 +1,6 @@
 package com.exercicios.exerciciostestesunitarios;
 
+import com.exercicios.exerciciostestesunitarios.dto.VeiculoRequest;
 import com.exercicios.exerciciostestesunitarios.exceptions.VeiculoNaoEncontradoException;
 import com.exercicios.exerciciostestesunitarios.models.Veiculos;
 import com.exercicios.exerciciostestesunitarios.services.VeiculoService;
@@ -8,6 +9,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ public class VeiculosControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
     private ModelMapper mapper;
 
     @Test
@@ -90,6 +93,46 @@ public class VeiculosControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isNotFound());
+    }
+
+//    @Test
+//    @DisplayName("Quando cadastra um novo veículo, retorna o cadastro")
+//    void cadastra() throws Exception {
+//        Veiculos veiculo = new Veiculos("ABC", "carro", "branco", 2010, 1);
+//        Mockito.when(service.save(veiculo)).thenReturn(veiculo);
+//
+//        VeiculoRequest request = mapper.map(veiculo, VeiculoRequest.class);
+//
+//        mockMvc.perform(
+//                        post("/api/veiculos", request)
+//                                .contentType(MediaType.APPLICATION_JSON)
+//                )
+//                .andExpect(status().isCreated());
+//    }
+
+    @Test
+    @DisplayName("Deleta o registro quando a placa existe")
+    void deleta() throws Exception {
+        String placa = "ABC";
+        mockMvc.perform(
+                        delete("/api/veiculos/{placa}", placa)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("Adiciona multa ao veiculo")
+    void gerarMulta() throws Exception {
+
+        Veiculos veiculo = new Veiculos("ABC", "carro", "preto", 2010, 1);
+        Mockito.when(service.gerarMulta("ABC")).thenReturn(veiculo);
+        mockMvc.perform(
+                        put("/api/veiculos/{placa}/multas", veiculo.getPlaca())
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.qtdMultas", is(veiculo.getQtdMultas())));
     }
 
 }

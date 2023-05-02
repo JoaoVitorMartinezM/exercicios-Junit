@@ -60,9 +60,10 @@ public class VeiculosController {
     }
 
     @DeleteMapping("{placa}")
-    public void deleteByPlaca(@PathVariable("placa") String placa){
+    public ResponseEntity deleteByPlaca(@PathVariable("placa") String placa){
 
         service.deleteByPlaca(placa);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("{placa}/multas")
